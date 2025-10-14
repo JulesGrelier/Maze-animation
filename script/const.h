@@ -4,7 +4,7 @@
 #define WIDTH 1080
 #define HEIGHT 720
 
-#define SIZE_SQUARE 40 //Epaisseur du mur comprise
+#define SIZE_SQUARE 10 //Epaisseur du mur comprise
 #define THICKNESS 1
 
 #define NB_H_SQUARE WIDTH/SIZE_SQUARE

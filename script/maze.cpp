@@ -93,57 +93,38 @@ Way chooseWay(Maze maze, Square currentSquare)
     printf("Determination de la way de l'id : %d\n", currentSquare.id);
 
     std::pair<bool, bool> accesses = defineBottomAndRigthAcces(currentSquare);
+    int bottomAccess = -1, rightAccess = -1;
 
     printf("Accsesible en bas : %d ---- accesible à droite : %d\n", accesses.first, accesses.second);
 
-    if (!accesses.first & !accesses.second) //If there isn't any acces
+
+    if (accesses.first)
     {
-        printf("WAY = NOTHING");
+        Square &bottomNeighbor = returnNeighbor(maze, currentSquare, BOTTOM);
+        if (bottomNeighbor.id != currentSquare.id) { bottomAccess = currentSquare.id; }
+    }
+
+    if (accesses.second)
+    {
+        Square &rightNeighbor = returnNeighbor(maze, currentSquare, RIGHT);
+        if (rightNeighbor.id != currentSquare.id) { rightAccess = currentSquare.id; }
+    }
+
+
+    if (bottomAccess == -1 & rightAccess == -1) {
         return NOTHING;
     }
-
-    else if (accesses.first & !accesses.second) //If there is just bottom acces
-    {
-        Square &bottomNeighbor = returnNeighbor(maze, currentSquare, BOTTOM);
-        if (bottomNeighbor.id != currentSquare.id) {printf("WAY = BOTTOM"); return BOTTOM; } else { printf("WAY = NOTHING"); return NOTHING; }
+    else if (bottomAccess != -1 & rightAccess == -1) {
+        return BOTTOM;
     }
-
-    else if (!accesses.first & accesses.second) //If there is just right acces
-    {
-        Square &rightNeighbor = returnNeighbor(maze, currentSquare, RIGHT);
-        if (rightNeighbor.id != currentSquare.id) {printf("WAY = RIGHT"); return RIGHT; } else { printf("WAY = NOTHING"); return NOTHING; }
+    else if (bottomAccess == -1 & rightAccess != -1) {
+        return RIGHT;
     }
-
-    else if (accesses.first & accesses.second) //If there is the both acces
-    {
-        Square &bottomNeighbor = returnNeighbor(maze, currentSquare, BOTTOM);
-        Square &rightNeighbor = returnNeighbor(maze, currentSquare, RIGHT);
-
-        bool compatible_at_bottom = bottomNeighbor.id != currentSquare.id;
-        bool compatible_on_right = rightNeighbor.id != currentSquare.id;
-
-        if (compatible_at_bottom & compatible_on_right) {
-            if (rand() % 2 == 0) { printf("WAY = BOTTOM"); return BOTTOM; } else { printf("WAY = RIGHT"); return RIGHT; }
-        }
-
-        else if (compatible_at_bottom & !compatible_on_right) {
-            printf("WAY = BOTTOM");
-            return BOTTOM;
-        }
-
-        else if (!compatible_at_bottom & compatible_on_right) {
-            printf("WAY = RIGHT");
-            return RIGHT;
-        }
-
-        else { return NOTHING; }
-    }
-
     else {
-        exit(3);
+        if (rand() % 2 == 0) { return BOTTOM; } else { return RIGHT; }
     }
-    
 }
+
 
 void RemoveFromUsable(Maze &maze, Square &square)
 {
