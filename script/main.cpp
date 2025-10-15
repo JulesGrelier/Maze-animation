@@ -14,6 +14,7 @@ int main(void)
     }
 
     Maze maze = newMaze();
+    bool begin = true;
 
 
     while (window.isOpen())
@@ -24,31 +25,36 @@ int main(void)
         }
         window.clear();
 
-        for (int i = 0; i < 400; i++)
+        if (begin)
         {
-            if (maze.usable_indices.size() == 0)
+            for (int i = 0; i < 500; i++)
             {
-                break;
+                if (maze.usable_indices.size() == 0)
+                {
+                    begin = false;
+                    break;
+                }
+
+                Square &square = selectSquareRandomly(maze);
+                Way way = chooseWay(maze, square);
+                
+                if (way == NOTHING)
+                {
+                    RemoveFromUsable(maze, square);
+                    continue;
+                }
+
+                breakWall(square, way);
+                Square& neighbor = returnNeighbor(maze, square, way);
+                propagateNewID(maze, neighbor.id, square.id);
             }
 
-            Square &square = selectSquareRandomly(maze);
-            Way way = chooseWay(maze, square);
-            
-            if (way == NOTHING)
-            {
-                RemoveFromUsable(maze, square);
-                continue;
-            }
-
-            Square& neighbor = returnNeighbor(maze, square, way);
-
-            breakWall(square, way);
-            propagateNewID(maze, neighbor.id, square.id);
+            drawMaze(window, maze);
+            window.display();
+        } else {
+            animationMaze(window, maze);
+            window.display();
         }
-
-        drawMaze(window, maze);
-        window.display();
-        
     } 
     return 0;
 }

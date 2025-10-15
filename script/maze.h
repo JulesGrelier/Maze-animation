@@ -19,6 +19,8 @@ void drawMaze(sf::RenderWindow &window, Maze maze);
 
 void debugMaze(sf::RenderWindow &window, Maze maze);
 
+void animationMaze(sf::RenderWindow &window, Maze maze);
+
 Square& returnNeighbor(Maze &maze, Square currentSquare, Way way);
 
 Square& selectSquareRandomly(Maze &maze);

@@ -44,6 +44,17 @@ void debugMaze(sf::RenderWindow &window, Maze maze)
     }
 }
 
+void animationMaze(sf::RenderWindow &window, Maze maze)
+{
+    for (int row = 0; row < NB_V_SQUARE; row++)
+    {
+        for (int column = 0; column < NB_H_SQUARE; column++)
+        {
+            animationSquare(window, maze.squares[row][column]);
+        }
+    }
+}
+
 /*------------- LOGIQUE METIER -------------*/
 
 Square& selectSquareRandomly(Maze &maze)

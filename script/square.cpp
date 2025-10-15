@@ -29,6 +29,18 @@ void drawSquare(sf::RenderWindow &window, Square square)
     window.draw(rect);
 }
 
+void animationSquare(sf::RenderWindow &window, Square square)
+{
+    float bottomThickness = square.hasBottomWall ? SIZE_SQUARE-THICKNESS : SIZE_SQUARE;
+    float rightThickness = square.hasRightWall ? SIZE_SQUARE-THICKNESS : SIZE_SQUARE;
+
+    sf::RectangleShape rect(sf::Vector2f(rightThickness, bottomThickness));
+    rect.setPosition(square.position);
+    rect.setFillColor(sf::Color::Red);
+
+    window.draw(rect);
+}
+
 void debugSquare(sf::RenderWindow &window, Square square)
 {
     drawSquare(window, square);

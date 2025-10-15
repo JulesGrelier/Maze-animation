@@ -28,6 +28,8 @@ Square newSquare(int column, int row, int id);
 
 void drawSquare(sf::RenderWindow &window, Square square);
 
+void animationSquare(sf::RenderWindow &window, Square square);
+
 void debugSquare(sf::RenderWindow &window, Square square);
 
 void breakWall(Square &square, Way way);
