@@ -1,134 +1,134 @@
 #include "maze.h"
 
-#include <iostream>
 using namespace std;
 
-Maze newMaze()
+Maze::Maze()
 {
-    Maze maze;
-
     for (int row = 0; row < NB_V_SQUARE; row++)
     {
         for (int column = 0; column < NB_H_SQUARE; column++)
         {
             int id = row * NB_H_SQUARE + column;
-            maze.squares[row][column] = newSquare(column, row, id);
-            maze.usable_indices.push_back(id);
+            m_squares[row][column] = Square(column, row, id);
 
-            cout << "ID = " << id << endl;
+            m_usableIndices.push_back(id);
         }
-    }    
+    }
+
+    m_positionOfColorfulOnes.push_back(make_pair(0, 0));
+    m_squares[0][0].m_colorful = true;
+    m_squares[0][0].m_percentage_brightness = 100;
+
     
-    return maze;
 }
 
-void drawMaze(sf::RenderWindow &window, Maze maze)
+/*------------- VISUALISATION -------------*/
+
+void Maze::drawConstruction(sf::RenderWindow &window)
 {
     for (int row = 0; row < NB_V_SQUARE; row++)
     {
         for (int column = 0; column < NB_H_SQUARE; column++)
         {
-            drawSquare(window, maze.squares[row][column]);
+            m_squares[row][column].drawSquare(window);
         }
     }
 }
 
-void debugMaze(sf::RenderWindow &window, Maze maze)
+void Maze::debug(sf::RenderWindow &window)
 {
     for (int row = 0; row < NB_V_SQUARE; row++)
     {
         for (int column = 0; column < NB_H_SQUARE; column++)
         {
-            debugSquare(window, maze.squares[row][column]);
+            m_squares[row][column].debugSquare(window);
         }
     }
 }
 
-void animationMaze(sf::RenderWindow &window, Maze maze)
+void Maze::drawAnimation(sf::RenderWindow &window)
 {
     for (int row = 0; row < NB_V_SQUARE; row++)
     {
         for (int column = 0; column < NB_H_SQUARE; column++)
         {
-            animationSquare(window, maze.squares[row][column]);
+            m_squares[row][column].animationSquare(window);
         }
     }
 }
 
-/*------------- LOGIQUE METIER -------------*/
 
-Square& selectSquareRandomly(Maze &maze)
+
+Square& Maze::selectSquareRandomly()
 {
-    int randomNumber = rand() % maze.usable_indices.size();
-    int randomIndex = maze.usable_indices[randomNumber];
+    int randomNumber = rand() % m_usableIndices.size();
+    int randomIndex = m_usableIndices[randomNumber];
 
     int row = randomIndex/NB_H_SQUARE; //Round down automatically
     int column = randomIndex - row * NB_H_SQUARE;
 
-    Square &randomSquare = maze.squares[row][column];
-
-    printf("---------- DEBUT D'UN CYCLE ----------\n\n");
-    printf("Index aléatoire : %d\nCoordonnées de l'index : (%d, %d)\nID du square : %d\n\n", randomIndex, row, column, randomSquare.id);
+    Square &randomSquare = m_squares[row][column];
 
     return randomSquare;
 }
 
 
-Square& returnNeighbor(Maze &maze, Square currentSquare, Way way)
+Square& Maze::returnNeighbor(Square currentSquare, Way way)
 {
-    int row = currentSquare.row;
-    int column = currentSquare.column;
+    int row = currentSquare.m_row;
+    int column = currentSquare.m_column;
 
     switch (way)
     {
         case BOTTOM:
-            if (row < NB_V_SQUARE) { return maze.squares[row+1][column]; }
+            if (row < NB_V_SQUARE) { return m_squares[row+1][column]; }
             break;
 
         case RIGHT:
-            if (column < NB_H_SQUARE) { return maze.squares[row][column+1]; }
+            if (column < NB_H_SQUARE) { return m_squares[row][column+1]; }
+            break;
+
+        case TOP:
+            if (row > 0) { return m_squares[row-1][column]; }
+            break;
+
+        case LEFT:
+            if (column > 0) { return m_squares[row][column-1]; }
             break;
 
         default:
             break;
     }
 
-    exit(2);
+    exit(1);
 }
 
 
-Way chooseWay(Maze maze, Square currentSquare)
+Way Maze::chooseWay(Square currentSquare)
 {
 
-    printf("--------------------\n");
-    printf("Determination de la way de l'id : %d\n", currentSquare.id);
-
-    std::pair<bool, bool> accesses = defineBottomAndRigthAcces(currentSquare);
-    int bottomAccess = -1, rightAccess = -1;
-
-    printf("Accsesible en bas : %d ---- accesible à droite : %d\n", accesses.first, accesses.second);
-
+    std::pair<bool, bool> accesses = currentSquare.defineBottomAndRigthAcces();
+    bool differenceAtTheBottom = false, differenceAtTheRight = false;
 
     if (accesses.first)
     {
-        Square &bottomNeighbor = returnNeighbor(maze, currentSquare, BOTTOM);
-        if (bottomNeighbor.id != currentSquare.id) { bottomAccess = currentSquare.id; }
+        Square &bottomNeighbor = returnNeighbor(currentSquare, BOTTOM);
+        if (bottomNeighbor.m_id != currentSquare.m_id) { differenceAtTheBottom = true; }
     }
 
     if (accesses.second)
     {
-        Square &rightNeighbor = returnNeighbor(maze, currentSquare, RIGHT);
-        if (rightNeighbor.id != currentSquare.id) { rightAccess = currentSquare.id; }
+        Square &rightNeighbor = returnNeighbor(currentSquare, RIGHT);
+        if (rightNeighbor.m_id != currentSquare.m_id) { differenceAtTheRight = true; }
     }
 
-
-    if (bottomAccess == -1 & rightAccess == -1) {
+    if (!differenceAtTheBottom & !differenceAtTheRight) {
         return NOTHING;
     }
-    else if (bottomAccess != -1 & rightAccess == -1) {
+    else if (differenceAtTheBottom & !differenceAtTheRight) {
         return BOTTOM;
     }
-    else if (bottomAccess == -1 & rightAccess != -1) {
+    else if (!differenceAtTheBottom & differenceAtTheRight) {
         return RIGHT;
     }
     else {
@@ -137,33 +137,116 @@ Way chooseWay(Maze maze, Square currentSquare)
 }
 
 
-void RemoveFromUsable(Maze &maze, Square &square)
+void Maze::RemoveFromUsable(Square &square)
 {
-    int index = square.row * NB_H_SQUARE + square.column;
+    int index = square.m_row * NB_H_SQUARE + square.m_column;
 
-    printf("\n\nSquare (%d, %d) a pour index : %d et doit être masquer\n\n", square.row, square.column, index);
+    auto target = std::find(m_usableIndices.begin(), m_usableIndices.end(), index);
 
-    auto target = std::find(maze.usable_indices.begin(), maze.usable_indices.end(), index);
-
-    if (target != maze.usable_indices.end())
+    if (target != m_usableIndices.end())
     {
-        maze.usable_indices.erase(target);
-        cout << "Profil trouvé" << endl;
+        m_usableIndices.erase(target);
     }
 }
 
 
-void propagateNewID(Maze &maze, int oldID, int newID)
+void Maze::propagateNewID(int oldID, int newID)
 {
-    for (int row = 0; row < NB_V_SQUARE; row++)
-    {
-        for (int column = 0; column < NB_H_SQUARE; column++)
-        {
-            if (maze.squares[row][column].id == oldID)
-            {   
-                maze.squares[row][column].id = newID;
+    for (int row = 0; row < NB_V_SQUARE; row++) {
+        for (int column = 0; column < NB_H_SQUARE; column++) {
+            if (m_squares[row][column].m_id == oldID) {   
+                m_squares[row][column].m_id = newID;
             }
-            
         }
     }
+}
+
+
+void Maze::makeOneCreationCycle(bool &continueCreation)
+{
+    for (int i = 0; i < 500; i++)
+    {
+        if (m_usableIndices.size() == 0)
+        {
+            continueCreation = false;
+            break;
+        }
+
+        Square &square = selectSquareRandomly();
+        Way way = chooseWay(square);
+        
+        if (way == NOTHING)
+        {
+            RemoveFromUsable(square);
+            continue;
+        }
+
+        square.breakWall(way);
+        Square& neighbor = returnNeighbor(square, way);
+        propagateNewID(neighbor.m_id, square.m_id);
+    }
+}
+
+
+std::vector<Way> Maze::returnNeighborsWithoutWall(Square square, vector<Way> ways)
+{
+    std::vector<Way> output;
+
+    for (auto const way : ways)
+    {
+        switch (way)
+        {
+            case BOTTOM:
+                if (!square.m_hasBottomWall) { output.push_back(BOTTOM); }
+                break;
+
+            case RIGHT:
+                if (!square.m_hasRightWall) { output.push_back(RIGHT); }
+                break;
+
+            case TOP:
+                if (!(returnNeighbor(square, TOP).m_hasBottomWall)) { output.push_back(TOP); }
+                break;
+
+            case LEFT:
+                if (!(returnNeighbor(square, LEFT).m_hasRightWall)) { output.push_back(LEFT); }
+                break;
+            
+            default:
+                break;
+        }
+    }
+
+    return output;
+}
+
+void Maze::makeOneAnimationCycle()
+{
+    std::vector<std::pair<int, int>> new_positions;
+
+    for (auto const position : m_positionOfColorfulOnes)
+    {
+        Square &square = m_squares[position.first][position.second];
+        
+        std::vector<Way> ways = square.returnWaysToNeighbors();
+        ways = returnNeighborsWithoutWall(square, ways);
+        
+        
+        for (auto const way : ways)
+        {
+            Square &neighbor = returnNeighbor(square, way);
+
+            if (!neighbor.m_colorful)
+            {
+
+                neighbor.m_colorful = true;
+                neighbor.m_percentage_brightness = 0;
+
+                new_positions.push_back(make_pair(neighbor.m_row, neighbor.m_column));
+            }   
+            
+        }
+        
+    }
+    m_positionOfColorfulOnes = new_positions;    
 }

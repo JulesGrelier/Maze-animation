@@ -13,7 +13,7 @@ int main(void)
         return 2;
     }
 
-    Maze maze = newMaze();
+    Maze maze;
     bool begin = true;
 
 
@@ -27,34 +27,16 @@ int main(void)
 
         if (begin)
         {
-            for (int i = 0; i < 500; i++)
-            {
-                if (maze.usable_indices.size() == 0)
-                {
-                    begin = false;
-                    break;
-                }
-
-                Square &square = selectSquareRandomly(maze);
-                Way way = chooseWay(maze, square);
-                
-                if (way == NOTHING)
-                {
-                    RemoveFromUsable(maze, square);
-                    continue;
-                }
-
-                breakWall(square, way);
-                Square& neighbor = returnNeighbor(maze, square, way);
-                propagateNewID(maze, neighbor.id, square.id);
-            }
-
-            drawMaze(window, maze);
-            window.display();
-        } else {
-            animationMaze(window, maze);
-            window.display();
+            maze.makeOneCreationCycle(begin);
+            if (SHOW_CONSTRUCTION) { maze.drawConstruction(window); }
+        } 
+        else
+        {       
+            maze.makeOneAnimationCycle();
+            maze.drawAnimation(window);
         }
+        
+        window.display();
     } 
     return 0;
 }
