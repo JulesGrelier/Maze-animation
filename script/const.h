@@ -1,10 +1,13 @@
 #ifndef CONSTANTS
 #define CONSTANTS
 
+/* -------- SHOULDN'T TOUCH -------- */
 #define WIDTH 1080
 #define HEIGHT 720
+/* --------------------------------- */
 
-#define SIZE_SQUARE 6
+
+#define SIZE_SQUARE 4
 #define THICKNESS 1
 
 /* ---------- DON'T TOUCH ---------- */
@@ -14,7 +17,7 @@
 /* --------------------------------- */
 
 #define SHOW_CONSTRUCTION true
-#define STEP_FOR_PROCESS 2
+#define STEP_FOR_COLOR_ANIMATION 2
 
 #define RED_VALUE_1 255
 #define GREEN_VALUE_1 230

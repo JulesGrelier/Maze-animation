@@ -36,19 +36,6 @@ void Square::animationSquare(sf::RenderWindow &window)
     window.draw(rect);
 }
 
-
-void Square::debugSquare(sf::RenderWindow &window)
-{
-    drawSquare(window);
-
-    sf::Font arial("Arial.ttf");
-    sf::Text text(arial, std::to_string(m_id), SIZE_SQUARE/2);
-    text.setFillColor(sf::Color::Red);
-    text.setPosition(m_position);
-
-    window.draw(text);
-}
-
 void Square::breakWall(Way way)
 {
     if (way == BOTTOM) 
@@ -83,7 +70,7 @@ std::vector<Way> Square::returnWaysToNeighbors()
 
 void Square::reduct_brightness()
 {
-    m_percentage_brightness += STEP_FOR_PROCESS;
+    m_percentage_brightness += STEP_FOR_COLOR_ANIMATION;
 
     if (m_percentage_brightness > 100)
     {

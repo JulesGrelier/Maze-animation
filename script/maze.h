@@ -21,7 +21,6 @@ public :
     Maze();
 
     void drawConstruction(sf::RenderWindow &window);
-    void debug(sf::RenderWindow &window);
     void drawAnimation(sf::RenderWindow &window);
 
     Square& selectSquareRandomly();

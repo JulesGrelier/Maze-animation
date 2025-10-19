@@ -43,7 +43,6 @@ public:
 
     void drawSquare(sf::RenderWindow &window);
     void animationSquare(sf::RenderWindow &window);
-    void debugSquare(sf::RenderWindow &window);
 
     void breakWall(Way way);
 

@@ -35,16 +35,6 @@ void Maze::drawConstruction(sf::RenderWindow &window)
     }
 }
 
-void Maze::debug(sf::RenderWindow &window)
-{
-    for (int row = 0; row < NB_V_SQUARE; row++)
-    {
-        for (int column = 0; column < NB_H_SQUARE; column++)
-        {
-            m_squares[row][column].debugSquare(window);
-        }
-    }
-}
 
 void Maze::drawAnimation(sf::RenderWindow &window)
 {
